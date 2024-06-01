@@ -1,0 +1,29 @@
+name: Workflow
+
+on: [push]
+
+jobs:
+        build:
+                runs-on: ubuntu-latest
+
+                steps:
+                        - name: Checks out repository
+                        uses: actions/checkout@v2
+
+                        - name: Build the Docker image
+                          uses: docker-setup-buildx-actionv@1
+
+                        - name: Login to Github Container
+                          uses: docker-login-action@v1
+                          with:
+                                  registry: ghrc.io
+                                  username: ${{ github.repository_owner }}
+                                  password: ${{ secrets.CR_PAT }}
+
+
+                        - name: Push Docker image to regitry
+                          uses: docker/build-push-action@v2
+                          with:
+                                  context: .
+                                  push: true
+                                  tags: grch.io/${{ github.repository }}:latest
